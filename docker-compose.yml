@@ -1,0 +1,80 @@
+version: '3.8'
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./persist/postgres_data
+      o: bind
+  jupyter_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./persist/jupyter_data
+      o: bind
+  mlflow_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./persist/mlflow_data
+      o: bind
+
+networks:
+  back-tier:
+  front-tier:
+
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mlflow
+    volumes:
+      - ./persist/postgres_data:/var/lib/postgresql/data
+      - ./db-init-scripts:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    networks:
+      - back-tier
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - back-tier
+      - front-tier
+
+  jupyter:
+    build:
+      context: .
+      dockerfile: jupyter.Dockerfile
+    restart: always
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    volumes:
+      - jupyter_data:/home/jovyan/work
+      # - ./my_local_folder:/home/jovyan/my_local_folder
+    ports:
+      - "8888:8888"
+    networks:
+      - front-tier
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: MLFlow.Dockerfile
+    restart: always
+    environment:
+      MLFLOW_TRACKING_URI: postgresql+psycopg2://user:password@db:5432/mlflow
+    volumes:
+      - mlflow_data:/mlflow
+    ports:
+      - "5000:5000"
+    networks:
+      - back-tier
+      - front-tier
