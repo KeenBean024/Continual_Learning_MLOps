@@ -71,6 +71,7 @@ services:
     restart: always
     environment:
       MLFLOW_TRACKING_URI: postgresql+psycopg2://user:password@db:5432/mlflow
+      MLFLOW_ARTIFACT_ROOT: /mlflow/artifacts
     volumes:
       - mlflow_data:/mlflow
     ports:
