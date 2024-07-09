@@ -8,6 +8,6 @@ COPY Pipfile .
 COPY Pipfile.lock .
 
 RUN pip install pipenv
-RUN pipenv install --system --deploy --ignore-pipfile
+RUN pipenv install --system --deploy --ignore-pipfile --no-cache-dir
 # Set environment variable to enable Jupyter Lab
 ENV JUPYTER_ENABLE_LAB=yes
