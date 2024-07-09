@@ -161,5 +161,9 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 persist/jupyter_data/Pip*
+persist/jupyter_data/*out.txt
+persist/jupyter_data/mlruns
+
+
 persist/mlflow_data/
 persist/postgres_data/

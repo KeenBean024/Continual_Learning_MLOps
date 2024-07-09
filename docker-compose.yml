@@ -64,6 +64,7 @@ services:
     networks:
       - front-tier
       - back-tier
+      
   mlflow:
     build:
       context: .
