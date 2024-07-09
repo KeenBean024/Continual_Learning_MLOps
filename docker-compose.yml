@@ -33,7 +33,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: mlflow
     volumes:
-      - ./persist/postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
       - ./db-init-scripts:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432"
@@ -73,10 +73,11 @@ services:
     environment:
       MLFLOW_TRACKING_URI: postgresql+psycopg2://user:password@db:5432/mlflow
       MLFLOW_ARTIFACT_ROOT: /mlflow/artifacts
+      MLFLOW_MLRUNS_ROOT: /mlflow/mlruns
     volumes:
       - mlflow_data:/mlflow
     ports:
       - "5000:5000"
     networks:
-      - back-tier
       - front-tier
+      - back-tier
