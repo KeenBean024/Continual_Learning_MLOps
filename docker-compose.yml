@@ -49,23 +49,23 @@ services:
       - back-tier
       - front-tier
 
-  jupyter:
-    build:
-      context: .
-      dockerfile: jupyter.Dockerfile
-    restart: always
-    environment:
-      JUPYTER_ENABLE_LAB: "yes"
-    volumes:
-      - jupyter_data:/home/jovyan/work
-      # - ./my_local_folder:/home/jovyan/my_local_folder
-    ports:
-      - "8888:8888"
-    networks:
-      - front-tier
-      - back-tier
+  # jupyter:
+  #   build:
+  #     context: .
+  #     dockerfile: jupyter.Dockerfile
+  #   restart: always
+  #   environment:
+  #     JUPYTER_ENABLE_LAB: "yes"
+  #   volumes:
+  #     - jupyter_data:/home/jovyan/work
+  #     # - ./my_local_folder:/home/jovyan/my_local_folder
+  #   ports:
+  #     - "8888:8888"
+  #   networks:
+  #     - front-tier
+  #     - back-tier
       
-  mlflow:
+  dev:
     build:
       context: .
       dockerfile: MLFlow.Dockerfile
@@ -74,10 +74,13 @@ services:
       MLFLOW_TRACKING_URI: postgresql+psycopg2://user:password@db:5432/mlflow
       MLFLOW_ARTIFACT_ROOT: /mlflow/artifacts
       MLFLOW_MLRUNS_ROOT: /mlflow/mlruns
+      JUPYTER_ENABLE_LAB: "yes"
     volumes:
       - mlflow_data:/mlflow
+      - jupyter_data:/code
     ports:
       - "5000:5000"
+      - "8888:8888"
     networks:
       - front-tier
       - back-tier

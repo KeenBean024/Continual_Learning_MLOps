@@ -12,14 +12,21 @@ ARG MLFLOW_MLRUNS_ROOT="/mlflow/mlruns"
 ENV MLFLOW_TRACKING_URI=$MLFLOW_TRACKING_URI
 ENV MLFLOW_ARTIFACT_ROOT=$MLFLOW_ARTIFACT_ROOT
 ENV MLFLOW_MLRUNS_ROOT=$MLFLOW_MLRUNS_ROOT
+ENV JUPYTER_ENABLE_LAB=yes
 
+COPY requirements.txt .
+RUN pip install -r requirements.txt --no-cache-dir
 RUN mkdir -p $MLFLOW_ARTIFACT_ROOT
 RUN mkdir -p $MLFLOW_MLRUNS_ROOT
+RUN mkdir -p "/code"
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--allow-root", "--notebook-dir=/code","--NotebookApp.token=''", "--NotebookApp.password=''"]
+
 # Set the entrypoint to run the MLflow server
 # ENTRYPOINT ["sh", "-c", "mlflow server --backend-store-uri ${MLFLOW_TRACKING_URI} --default-artifact-root ${MLFLOW_ARTIFACT_ROOT} --host 0.0.0.0 --port 5000"]
 RUN pip install gevent
 COPY wait-for-db.sh /wait-for-db.sh
 RUN chmod +x /wait-for-db.sh
+
 
 # Create a script to run the db upgrade and then start the server
 RUN echo '#!/bin/sh\n\
